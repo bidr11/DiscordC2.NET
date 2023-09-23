@@ -1,3 +1,5 @@
+using Discord;
+using Discord.Commands;
 using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordC2.Services;
@@ -17,6 +19,17 @@ public static class Bootstrapper
         {
             var serviceCollection = new ServiceCollection();
             var serviceProvider = serviceCollection
+                .AddSingleton(x => new DiscordShardedClient(new DiscordSocketConfig
+                {
+                    UseInteractionSnowflakeDate = false
+                }))
+                .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordShardedClient>()))
+                .AddSingleton(x => new CommandService(new CommandServiceConfig
+                {
+                    LogLevel = LogSeverity.Info,
+                    CaseSensitiveCommands = false,
+                }))
+                .AddSingleton<CommandHandler>()
                 .BuildServiceProvider();
 
             _serviceCollection = serviceCollection;
@@ -39,14 +52,5 @@ public static class Bootstrapper
         _serviceCollection.AddSingleton<TInterface>(instance);
         ServiceProvider = _serviceCollection.BuildServiceProvider();
     }
-
-    public static void RegisterElse()
-    {
-        ServiceProvider = _serviceCollection.AddSingleton<DiscordSocketClient>()
-                .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()))
-                .AddSingleton<CommandHandler>()
-                .BuildServiceProvider();
-    }
-
 
 }

@@ -26,22 +26,17 @@ class Program {
         .AddEnvironmentVariables()
         .Build();
 
-        var client = new DiscordShardedClient();
-        var textCommands = new CommandService(new CommandServiceConfig
-        {
-            LogLevel = LogSeverity.Info,
-            CaseSensitiveCommands = false,
-        });
-
         Bootstrapper.Init();
+
+        var client = Bootstrapper.ServiceProvider.GetRequiredService<DiscordShardedClient>();
+        var commands = Bootstrapper.ServiceProvider.GetRequiredService<InteractionService>();
+        var textCommands = Bootstrapper.ServiceProvider.GetRequiredService<CommandService>();
+
+        Bootstrapper.RegisterInstance(config);
         Bootstrapper.RegisterInstance(client);
+        Bootstrapper.RegisterInstance(commands);
         Bootstrapper.RegisterInstance(textCommands);
         Bootstrapper.RegisterType<ICommandHandler, CommandHandler>();
-        Bootstrapper.RegisterInstance(config);
-        Bootstrapper.RegisterElse();
-
-        var commands = Bootstrapper.ServiceProvider.GetRequiredService<InteractionService>();
-        Bootstrapper.RegisterInstance(commands);
 
         _commands = commands;
         _client = client;
@@ -68,8 +63,6 @@ class Program {
             
         await _client.LoginAsync(TokenType.Bot, token);
         await _client.StartAsync();
-
-        
 
         await Bootstrapper.ServiceProvider.GetRequiredService<ICommandHandler>().InitializeAsync();
         

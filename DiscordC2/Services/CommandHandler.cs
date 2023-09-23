@@ -34,8 +34,6 @@ public class CommandHandler : ICommandHandler
         _client.InteractionCreated += HandleInteraction;
         _client.MessageReceived += HandleCommandAsync;
 
-        _commands.SlashCommandExecuted += SlashCommandExecuted;
-
         _textCommands.CommandExecuted += async (optional, context, result) =>
         {
             if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
@@ -97,34 +95,6 @@ public class CommandHandler : ICommandHandler
             }
         }
     
-    private Task SlashCommandExecuted(SlashCommandInfo arg1, IInteractionContext arg2, Discord.Interactions.IResult arg3)
-    {
-        if (!arg3.IsSuccess)
-        {
-            switch (arg3.Error)
-            {
-                case InteractionCommandError.UnmetPrecondition:
-                    // implement
-                    break;
-                case InteractionCommandError.UnknownCommand:
-                    // implement
-                    break;
-                case InteractionCommandError.BadArgs:
-                    // implement
-                    break;
-                case InteractionCommandError.Exception:
-                    // implement
-                    break;
-                case InteractionCommandError.Unsuccessful:
-                    // implement
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        return Task.CompletedTask;
-    }
 }
 
     
