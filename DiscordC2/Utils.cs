@@ -2,7 +2,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Diagnostics;
 using System.Data;
-using System;
 using System.Runtime.InteropServices;
 
 public static class Utils {
@@ -32,13 +31,13 @@ public static class Utils {
         return stream;
     }
 
-    public static string GetSystemInfo()
+    public static string ExecuteCommandline(string command)
     {
         Process process = new Process();
         ProcessStartInfo startInfo = new ProcessStartInfo();
         startInfo.WindowStyle = ProcessWindowStyle.Hidden;
         startInfo.FileName = "cmd.exe";
-        startInfo.Arguments = "/C systeminfo";
+        startInfo.Arguments = $"/C {command}";
         startInfo.RedirectStandardOutput = true;
         startInfo.UseShellExecute = false;
         process.StartInfo = startInfo;

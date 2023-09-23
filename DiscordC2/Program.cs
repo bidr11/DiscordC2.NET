@@ -1,22 +1,23 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+
 using Discord;
 using Discord.Commands;
 using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordC2.Common;
 using DiscordC2.Init;
-using DiscordC2.Modules;
 using DiscordC2.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualBasic;
 
 class Program {
-    DiscordShardedClient _client;
-    CommandService _textCommands;
-    InteractionService _commands;
+    private bool DEBUG = true;
+    private DiscordShardedClient _client;
+    private CommandService _textCommands;
+    private InteractionService _commands;
     private readonly IConfigurationRoot _config;
+    private ulong _testGuildId;
 
     public static Task Main(string[] args) => new Program().MainAsync();
 
@@ -25,6 +26,7 @@ class Program {
         .AddJsonFile($"appsettings.json")
         .AddEnvironmentVariables()
         .Build();
+
 
         Bootstrapper.Init();
 
@@ -42,6 +44,7 @@ class Program {
         _client = client;
         _textCommands = textCommands;
         _config = config;
+        
     }
 
     public async Task MainAsync()
@@ -50,7 +53,18 @@ class Program {
         _client.ShardReady += async shard =>
         {
             await Logger.Log(LogSeverity.Info, "ShardReady", $"Shard Number {shard.ShardId} is connected and ready_!");
-            await _commands.RegisterCommandsGloballyAsync(true);
+            if (DEBUG)
+            {
+                _testGuildId = ulong.Parse(_config.GetRequiredSection("Settings")["guildId"]);
+                // this is where you put the id of the test discord guild
+                Console.WriteLine($"In debug mode, adding commands to {_testGuildId}...");
+                await _commands.RegisterCommandsToGuildAsync(_testGuildId);
+            }
+            else
+            {
+                // this method will add commands globally, but can take around an hour
+                await _commands.RegisterCommandsGloballyAsync(true);
+            }
         };
 
 

