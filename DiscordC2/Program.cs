@@ -2,59 +2,80 @@
 
 using Discord;
 using Discord.Commands;
+using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordC2.Common;
 using DiscordC2.Init;
+using DiscordC2.Modules;
 using DiscordC2.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualBasic;
 
-var config = new ConfigurationBuilder()
-    .AddJsonFile($"appsettings.json")
-    .AddEnvironmentVariables()
-    .Build();
-var client = new DiscordShardedClient();
+class Program {
+    DiscordShardedClient _client;
+    CommandService _textCommands;
+    InteractionService _commands;
+    private readonly IConfigurationRoot _config;
 
+    public static Task Main(string[] args) => new Program().MainAsync();
 
-var commands = new CommandService(new CommandServiceConfig
-{
-    // Again, log level:
-    LogLevel = LogSeverity.Info,
-            
-    // There's a few more properties you can set,
-    // for example, case-insensitive commands.
-    CaseSensitiveCommands = false,
-});
+    public Program() {
+        var config = new ConfigurationBuilder()
+        .AddJsonFile($"appsettings.json")
+        .AddEnvironmentVariables()
+        .Build();
 
-// Setup your DI container.
-Bootstrapper.Init();
-Bootstrapper.RegisterInstance(client);
-Bootstrapper.RegisterInstance(commands);
-Bootstrapper.RegisterType<ICommandHandler, CommandHandler>();
-Bootstrapper.RegisterInstance(config);
+        var client = new DiscordShardedClient();
+        var textCommands = new CommandService(new CommandServiceConfig
+        {
+            LogLevel = LogSeverity.Info,
+            CaseSensitiveCommands = false,
+        });
 
-await MainAsync();
+        Bootstrapper.Init();
+        Bootstrapper.RegisterInstance(client);
+        Bootstrapper.RegisterInstance(textCommands);
+        Bootstrapper.RegisterType<ICommandHandler, CommandHandler>();
+        Bootstrapper.RegisterInstance(config);
+        Bootstrapper.RegisterElse();
 
-async Task MainAsync()
-{
-    await Bootstrapper.ServiceProvider.GetRequiredService<ICommandHandler>().InitializeAsync();
-    
-    client.ShardReady += async shard =>
-    {
-        await Logger.Log(LogSeverity.Info, "ShardReady", $"Shard Number {shard.ShardId} is connected and ready!");
-    };
-        
-    // Login and connect.
-    var token = config.GetRequiredSection("Settings")["DiscordBotToken"];
-    if (string.IsNullOrWhiteSpace(token))
-    {
-        await Logger.Log(LogSeverity.Error, $"{nameof(Program)} | {nameof(MainAsync)}", "Token is null or empty.");
-        return;
+        var commands = Bootstrapper.ServiceProvider.GetRequiredService<InteractionService>();
+        Bootstrapper.RegisterInstance(commands);
+
+        _commands = commands;
+        _client = client;
+        _textCommands = textCommands;
+        _config = config;
     }
-        
-    await client.LoginAsync(TokenType.Bot, token);
-    await client.StartAsync();
 
-    // Wait infinitely so your bot actually stays connected.
-    await Task.Delay(Timeout.Infinite);
+    public async Task MainAsync()
+    {
+
+        _client.ShardReady += async shard =>
+        {
+            await Logger.Log(LogSeverity.Info, "ShardReady", $"Shard Number {shard.ShardId} is connected and ready_!");
+            await _commands.RegisterCommandsGloballyAsync(true);
+        };
+
+
+        var token = _config.GetRequiredSection("Settings")["DiscordBotToken"];
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            await Logger.Log(LogSeverity.Error, $"{nameof(Program)} | {nameof(MainAsync)}", "Token is null or empty.");
+            return;
+        }
+            
+        await _client.LoginAsync(TokenType.Bot, token);
+        await _client.StartAsync();
+
+        
+
+        await Bootstrapper.ServiceProvider.GetRequiredService<ICommandHandler>().InitializeAsync();
+        
+        await Task.Delay(Timeout.Infinite);
+    }
 }
+
+
+

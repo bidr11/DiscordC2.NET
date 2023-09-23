@@ -1,3 +1,6 @@
+using Discord.Interactions;
+using Discord.WebSocket;
+using DiscordC2.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DiscordC2.Init;
@@ -36,4 +39,14 @@ public static class Bootstrapper
         _serviceCollection.AddSingleton<TInterface>(instance);
         ServiceProvider = _serviceCollection.BuildServiceProvider();
     }
+
+    public static void RegisterElse()
+    {
+        ServiceProvider = _serviceCollection.AddSingleton<DiscordSocketClient>()
+                .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()))
+                .AddSingleton<CommandHandler>()
+                .BuildServiceProvider();
+    }
+
+
 }

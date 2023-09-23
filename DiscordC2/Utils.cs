@@ -1,15 +1,33 @@
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Diagnostics;
 using System.Data;
+using System;
+using System.Runtime.InteropServices;
 
 public static class Utils {
+    [DllImport("user32.dll")]
+    public static extern IntPtr GetDesktopWindow();
+
+    [DllImport("user32.dll")]
+    public static extern IntPtr GetWindowDC(IntPtr ptr);
+
+    [DllImport("gdi32.dll")]
+    public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+
+
     public static MemoryStream GetScreenshot()
     {
-        var bitmap = new Bitmap(1920, 1080);
+        IntPtr desktop = GetDesktopWindow();
+        IntPtr hdc = GetWindowDC(desktop);
+        int screenWidth = GetDeviceCaps(hdc, 8); 
+        int screenHeight = GetDeviceCaps(hdc, 10);
+        
+        var bitmap = new Bitmap(screenWidth, screenHeight);
         var graphics = Graphics.FromImage(bitmap);
         graphics.CopyFromScreen(0, 0, 0, 0, bitmap.Size);
         var stream = new MemoryStream();
-        bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+        bitmap.Save(stream, ImageFormat.Png);
         stream.Position = 0;
         return stream;
     }
