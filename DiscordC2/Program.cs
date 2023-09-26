@@ -18,7 +18,6 @@ class Program {
     private InteractionService _commands;
     private readonly IConfigurationRoot _config;
     private ulong _testGuildId;
-
     public static Task Main(string[] args) => new Program().MainAsync();
 
     public Program() {
@@ -44,7 +43,6 @@ class Program {
         _client = client;
         _textCommands = textCommands;
         _config = config;
-        
     }
 
     public async Task MainAsync()
@@ -52,6 +50,7 @@ class Program {
 
         _client.ShardReady += async shard =>
         {
+            string HostId = Utils.HostId;
             await Logger.Log(LogSeverity.Info, "ShardReady", $"Shard Number {shard.ShardId} is connected and ready_!");
             if (DEBUG)
             {
@@ -65,6 +64,10 @@ class Program {
                 // this method will add commands globally, but can take around an hour
                 await _commands.RegisterCommandsGloballyAsync(true);
             }
+            // send a message to the configured channel when the bot is ready
+            IMessageChannel channel = _client.GetChannel(ulong.Parse(_config.GetRequiredSection("Settings")["channelId"])) as IMessageChannel;
+            await channel.SendMessageAsync($"Bot {HostId} {Utils.MD5Hash(HostId)} is ready!");
+            // await _client.GetUser(ulong.Parse(_config.GetRequiredSection("Settings")["ownerId"])).SendMessageAsync("Bot is ready!");
         };
 
 

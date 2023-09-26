@@ -4,6 +4,7 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordC2.Services;
 using Microsoft.Extensions.DependencyInjection;
+using System.Security.Cryptography;
 
 namespace DiscordC2.Init;
 
@@ -19,7 +20,7 @@ public static class Bootstrapper
         {
             var serviceCollection = new ServiceCollection();
             var serviceProvider = serviceCollection
-                .AddSingleton(x => new DiscordShardedClient(new DiscordSocketConfig
+                .AddSingleton(new DiscordShardedClient(new DiscordSocketConfig
                 {
                     UseInteractionSnowflakeDate = false
                 }))
@@ -30,6 +31,7 @@ public static class Bootstrapper
                     CaseSensitiveCommands = false,
                 }))
                 .AddSingleton<CommandHandler>()
+                .AddSingleton(MD5.Create())
                 .BuildServiceProvider();
 
             _serviceCollection = serviceCollection;

