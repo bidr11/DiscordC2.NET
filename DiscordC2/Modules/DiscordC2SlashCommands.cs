@@ -86,6 +86,9 @@ public class DiscordC2SlashCommands : InteractionModuleBase<ShardedInteractionCo
             return;
         await DeferAsync();
 
+        // check if already connected
+        if (Context.Guild.CurrentUser.VoiceChannel != null) { await FollowupAsync("already connected"); return; }
+
         // Connect to channel
         channel ??= (Context.User as IGuildUser)?.VoiceChannel;
         if (channel == null) { await FollowupAsync("User must be in a voice channel, or a voice channel must be passed as an argument."); return; }
@@ -94,17 +97,22 @@ public class DiscordC2SlashCommands : InteractionModuleBase<ShardedInteractionCo
         // Transmit Audio
         var audioClient = await channel.ConnectAsync();
         var stream = audioClient.CreatePCMStream(AudioApplication.Voice);
-        try {
+        try 
+        {
             Voice.GetAudioStream(stream);
-        } finally {
+        } 
+        finally 
+        {
             await stream.FlushAsync();
         }
+        
     }
 
     [SlashCommand("leave", "leave a voice channel")] 
     public async Task LeaveChannel()
     {
         await DeferAsync();
+        if (Context.Guild.CurrentUser.VoiceChannel == null) { await FollowupAsync("not in a voice channel"); return; }
         Voice.StopAudioStream();
         await Context.Guild.CurrentUser.VoiceChannel.DisconnectAsync();
         await FollowupAsync("disconnected");
