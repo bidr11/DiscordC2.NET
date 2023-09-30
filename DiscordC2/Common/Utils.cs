@@ -23,6 +23,11 @@ public static class Utils {
 
     public static MemoryStream GetScreenshot()
     {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            throw new PlatformNotSupportedException("Screenshots are only supported on Windows.");
+        }
+
         IntPtr desktop = GetDesktopWindow();
         IntPtr hdc = GetWindowDC(desktop);
         int screenWidth = GetDeviceCaps(hdc, 8); 
@@ -84,13 +89,15 @@ public static class Utils {
     }
 
     public static string MD5Hash(string input) {
-        MD5 md5 = Bootstrapper.ServiceProvider.GetRequiredService<MD5>();
+        MD5? md5 = Bootstrapper.ServiceProvider?.GetRequiredService<MD5>();
+
+        if (md5 == null)
+            throw new Exception("MD5 service not found");
 
         byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
-        byte[] hashBytes = md5.ComputeHash(inputBytes);
+        byte[] hashBytes = md5?.ComputeHash(inputBytes) ?? Array.Empty<byte>();
         
         return Convert.ToHexString(hashBytes);
-
     }
 
     public static string DownloadFile(string url, string path) {
@@ -110,7 +117,7 @@ public static class Utils {
                     return "success";
 
             } catch (InvalidOperationException e) {
-                return "URL invalid";
+                return $"error {e.Message}";
             }
 
         }

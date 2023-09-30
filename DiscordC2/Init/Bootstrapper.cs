@@ -22,7 +22,8 @@ public static class Bootstrapper
             var serviceProvider = serviceCollection
                 .AddSingleton(new DiscordShardedClient(new DiscordSocketConfig
                 {
-                    UseInteractionSnowflakeDate = false
+                    UseInteractionSnowflakeDate = false,
+                    GatewayIntents = GatewayIntents.All
                 }))
                 .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordShardedClient>()))
                 .AddSingleton(x => new CommandService(new CommandServiceConfig

