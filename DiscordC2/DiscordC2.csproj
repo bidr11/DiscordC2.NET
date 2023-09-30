@@ -14,7 +14,6 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0"/>
     <PackageReference Include="System.Drawing.Common" Version="8.0.0-rc.1.23419.5"/>
     <PackageReference Include="NAudio" Version="2.2.1"/>
-    <!-- <PackageReference Include="libsodium" Version="1.0.19"/> -->
     <PackageReference Include="Opus" Version="1.0.0"/>
   </ItemGroup>
   <ItemGroup>
