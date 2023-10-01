@@ -2,6 +2,7 @@
 The DiscordC2.NET is a bot-based C2 (Command and Control) tool made using C# that is designed to provide remote access and control over computer connections. This tool allows for you can perform various tasks and manage computers completely through Discord.
 
 ## Features
+- Taking screenshots
 - Remote code execution
 - Downloading files
 - Uploading files
