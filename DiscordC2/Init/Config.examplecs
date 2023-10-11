@@ -1,0 +1,21 @@
+using Microsoft.Extensions.Configuration;
+
+namespace DiscordC2.Init;
+
+public class Config {
+    public static IConfigurationRoot GetConfig(bool DEBUG) {
+        var builder = new ConfigurationBuilder();
+        if (DEBUG) {
+            builder.AddJsonFile($"appsettings.json")
+            .AddEnvironmentVariables();
+        } else {
+            builder.AddInMemoryCollection(new Dictionary<string, string>
+            {
+                { "Settings:DiscordBotToken", "token" },
+                { "Settings:channelId", "id1" },
+                { "Settings:guildId", "id2" }
+            });
+        }
+        return builder.Build();
+    }
+}

@@ -1,4 +1,6 @@
+/.vs
 /.vscode
 /DiscordC2/obj
 /DiscordC2/appsettings.json
 /DiscordC2/bin
+/DiscordC2/Init/Config.cs

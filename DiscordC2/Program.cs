@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 class Program {
-    private bool DEBUG = true;
+    private bool DEBUG = false;
     private DiscordShardedClient _client;
     private CommandService _textCommands;
     private InteractionService _commands;
@@ -18,11 +18,7 @@ class Program {
     public static Task Main(string[] args) => new Program().MainAsync();
 
     public Program() {
-        var config = new ConfigurationBuilder()
-        .AddJsonFile($"appsettings.json")
-        .AddEnvironmentVariables()
-        .Build();
-
+        var config = Config.GetConfig(DEBUG);
 
         Bootstrapper.Init();
 
@@ -49,18 +45,19 @@ class Program {
         {
             string HostId = Utils.HostId;
             await Logger.Log(LogSeverity.Info, "ShardReady", $"Shard Number {shard.ShardId} is connected and ready_!");
-            if (DEBUG)
-            {
+            // if (DEBUG)
+            // {
                 _testGuildId = ulong.Parse(_config.GetRequiredSection("Settings")["guildId"]);
                 // this is where you put the id of the test discord guild
-                Console.WriteLine($"In debug mode, adding commands to {_testGuildId}...");
+                Console.WriteLine($"Adding commands to {_testGuildId}...");
+                // Console.WriteLine($"In debug mode, adding commands to {_testGuildId}...");
                 await _commands.RegisterCommandsToGuildAsync(_testGuildId);
-            }
-            else
-            {
-                // this method will add commands globally, but can take around an hour
-                await _commands.RegisterCommandsGloballyAsync(true);
-            }
+            // }
+            // else
+            // {
+            //     // this method will add commands globally, but can take around an hour
+            //     await _commands.RegisterCommandsGloballyAsync(true);
+            // }
             // send a message to the configured channel when the bot is ready
             IMessageChannel channel = _client.GetChannel(ulong.Parse(_config.GetRequiredSection("Settings")["channelId"])) as IMessageChannel;
             await channel.SendMessageAsync($"Bot {HostId} {Utils.MD5Hash(HostId)} is ready!");

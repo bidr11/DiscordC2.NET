@@ -17,9 +17,6 @@
     <PackageReference Include="Opus" Version="1.0.0"/>
   </ItemGroup>
   <ItemGroup>
-    <None Remove="appsettings.json"/>
-    <EmbeddedResource Include="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <EmbeddedResource Include="appsettings.json" />
   </ItemGroup>
 </Project>
