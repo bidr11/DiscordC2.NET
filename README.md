@@ -1,5 +1,5 @@
 # DiscordC2.NET
-The DiscordC2.NET is a bot-based C2 (Command and Control) tool made using C# that is designed to provide remote access and control over computer connections. This tool allows for you can perform various tasks and manage computers completely through Discord.
+DiscordC2.NET is a bot-based C2 (Command and Control) tool made using C# that is designed to provide remote access and control over computer connections. Using this tool, you can perform various tasks and manage computers completely through Discord.
 
 ## Demo
 https://github.com/bidr11/DiscordC2.NET/assets/97621670/c6494342-6726-4856-8045-4c254fdc8fd3
@@ -21,7 +21,7 @@ https://github.com/bidr11/DiscordC2.NET/assets/97621670/c6494342-6726-4856-8045-
 
 ## Installation
 ### Setting up the server and the bot
-To use DiscordGo, you need to create a Discord bot and a Discord server. After that, invite the bot to your server.
+To use DiscordC2.NET, you need to create a Discord bot and a Discord server. After that, invite the bot to your server.
 
 Click [here](https://support.discord.com/hc/en-us/articles/204849977-How-do-I-create-a-server-) to learn how to create a server and [here](https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot) to create a bot and retrieve your token. And finally, [here](https://discordjs.guide/preparations/adding-your-bot-to-servers.html#bot-invite-links) to invite the bot to your server.
 Put your Bot Token, Main usage channel ID, and testing server ID into `appsettings.conf`.
